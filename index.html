@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaun Banega Crorepati | Creative Arts Activity</title>
+  <meta name="description" content="Kaun Banega Crorepati / Who Wants to Be a Millionaire game show for Creative Arts Club, featuring Sections A, B, C on the hot seat with authentic sound effects and lifelines.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="KAUN_BANEGA_CROREPATI_SEASON_11.png">
+</head>
+<body>
+
+  <!-- Dynamic Background Canvas for Volumetric Spotlights & Fog Particles -->
+  <canvas id="stageCanvas"></canvas>
+
+  <!-- Main Broadcast Stage Wrapper -->
+  <main class="kbc-stage-wrapper">
+
+    <!-- ==========================================
+         TOP HEADER: LOGOS, WALK AWAY, POINTS, LIFELINES
+         ========================================== -->
+    <header class="kbc-header">
+      <div class="header-left">
+        <button id="btnWalkAway" class="btn-walkaway" title="Quit and bank current points">Walk Away</button>
+      </div>
+
+      <div class="header-center">
+        <div class="points-capsule">
+          <span class="points-label">₹</span>
+          <span id="pointsVal" class="points-val">0 PTS</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- 50:50 Lifeline -->
+        <button id="btn5050" class="lifeline-btn" title="50-50: Remove 2 wrong options">
+          <span>50:50</span>
+        </button>
+
+        <!-- Call a Friend Lifeline -->
+        <button id="btnPhone" class="lifeline-btn" title="Call a Friend: Consult a classmate">
+          <svg viewBox="0 0 24 24">
+            <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+        </button>
+
+        <!-- Audience Poll Lifeline -->
+        <button id="btnPoll" class="lifeline-btn" title="Audience Poll: Classmates raise hands">
+          <svg viewBox="0 0 24 24">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          </svg>
+        </button>
+
+        <!-- Ask the Expert Lifeline -->
+        <button id="btnExpert" class="lifeline-btn" title="Ask the Expert: 2 Offline Experts input">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         CENTER ARENA: TEAM / 3D STAGE / LADDER
+         ========================================== -->
+    <section class="kbc-arena">
+      <!-- Left: Contestant Card -->
+      <div class="arena-left">
+        <div class="team-card">
+          <div id="teamSectionBadge" class="team-section-badge">SECTION A</div>
+          <div id="teamContestants" class="team-contestants">Contestants 1 & 2</div>
+        </div>
+      </div>
+
+      <!-- Center: KBC Season 11 Logo & Stage Arch -->
+      <div class="arena-center">
+        <div class="stage-arch-glow">
+          <img src="KAUN_BANEGA_CROREPATI_SEASON_11.png" alt="Kaun Banega Crorepati Logo" class="kbc-wheel-logo">
+          <div class="stage-arch-beam"></div>
+        </div>
+      </div>
+
+      <!-- Right: Points Ladder (15 to 1) -->
+      <aside class="arena-right">
+        <div class="ladder-container">
+          <div id="ladderList" class="ladder-list">
+            <!-- Dynamically populated from Level 15 to Level 1 -->
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ==========================================
+         BOTTOM ZONE: KBC HEXAGON QUESTION & OPTIONS
+         ========================================== -->
+    <section class="kbc-question-zone">
+      <div class="beam-line"></div>
+
+      <!-- Hexagonal Question Container -->
+      <div class="question-outer">
+        <div class="question-box">
+          <h1 id="questionText" class="question-text">
+            Loading KBC question...
+          </h1>
+        </div>
+      </div>
+
+      <!-- Options Container with Central Clock in the Middle -->
+      <div class="options-center-container">
+        <!-- 2x2 Pointed Hexagonal Options Grid -->
+        <div class="options-grid">
+          <div id="optA" class="option-btn">
+            <span class="option-prefix">&#9670; A:</span>
+            <span class="option-text">Option A</span>
+          </div>
+
+          <div id="optB" class="option-btn">
+            <span class="option-prefix">&#9670; B:</span>
+            <span class="option-text">Option B</span>
+          </div>
+
+          <div id="optC" class="option-btn">
+            <span class="option-prefix">&#9670; C:</span>
+            <span class="option-text">Option C</span>
+          </div>
+
+          <div id="optD" class="option-btn">
+            <span class="option-prefix">&#9670; D:</span>
+            <span class="option-text">Option D</span>
+          </div>
+        </div>
+
+        <!-- Clock in the Middle of the 4 Options -->
+        <div class="kbc-timer-widget center-options-clock">
+          <svg class="timer-svg" viewBox="0 0 120 120">
+            <circle class="timer-bg-circle" cx="60" cy="60" r="55"></circle>
+            <circle id="timerProgressCircle" class="timer-progress-circle" cx="60" cy="60" r="55"></circle>
+          </svg>
+          <div class="timer-content">
+            <span id="timerSeconds" class="timer-seconds">30</span>
+            <span class="timer-label">SEC</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+
+  <!-- ==========================================
+       HOST FLOATING TRIGGER & DRAWER
+       ========================================== -->
+  <button id="hostFloatingTrigger" class="host-floating-trigger" title="Host Controls (Hotkey: H)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+  </button>
+
+  <div id="hostDrawer" class="host-drawer">
+    <div class="host-drawer-header">
+      <span class="host-drawer-title">HOST CONTROLS (H)</span>
+      <button id="hostDrawerClose" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:16px;">✕</button>
+    </div>
+
+    <div class="host-btn-grid">
+      <button id="btnHostLock" class="host-btn warning">🔒 Lock Option (L)</button>
+      <button id="btnHostReveal" class="host-btn">👁️ Reveal Answer (R)</button>
+      <button id="btnHostCorrect" class="host-btn success">✅ Force Correct</button>
+      <button id="btnHostWrong" class="host-btn danger">❌ Force Wrong</button>
+      <button id="btnHostTimer" class="host-btn">⏸️ Pause Timer (Space)</button>
+      <button id="btnHostAddTimer" class="host-btn">+15s Clock</button>
+      <button id="btnHostResetLifelines" class="host-btn">🔄 Reset Lifelines</button>
+      <button id="btnHostSkipQ" class="host-btn">⏭️ Next Question (N)</button>
+      <button id="btnHostQuestionEditor" class="host-btn" style="grid-column: span 2;">✏️ Question Bank & Editor</button>
+      <button id="btnHostFinale" class="host-btn" style="grid-column: span 2; background: #7c2d12;">🏆 Show Grand Finale</button>
+    </div>
+
+    <div style="border-top: 1px solid #1e3a8a; padding-top: 6px; display: flex; gap: 6px;">
+      <button id="btnHostSoundIntro" class="host-btn" style="flex:1;">🎵 Play Intro</button>
+      <button id="btnHostSoundQuestion" class="host-btn" style="flex:1;">🎶 Q Music</button>
+      <button id="btnHostMute" class="host-btn">🔊 Mute</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: START ROUND / SECTION SELECTOR
+       ========================================== -->
+  <div id="startModal" class="kbc-modal-overlay active">
+    <div class="kbc-modal-card">
+      <img src="KAUN_BANEGA_CROREPATI_SEASON_11.png" alt="KBC Logo" class="modal-logo">
+      <h2 class="modal-title">KAUN BANEGA CROREPATI</h2>
+      <p class="modal-subtitle">Creative Arts Activity • Inter-Section Championship</p>
+
+      <div class="section-select-grid">
+        <div class="section-card-btn selected" data-section="Section A">
+          <div class="section-card-name">SECTION A</div>
+          <div class="section-card-status">Ready for Hot Seat</div>
+        </div>
+        <div class="section-card-btn" data-section="Section B">
+          <div class="section-card-name">SECTION B</div>
+          <div class="section-card-status">Ready for Hot Seat</div>
+        </div>
+        <div class="section-card-btn" data-section="Section C">
+          <div class="section-card-name">SECTION C</div>
+          <div class="section-card-status">Ready for Hot Seat</div>
+        </div>
+      </div>
+
+      <div class="contestant-inputs">
+        <input type="text" id="contestant1Input" class="contestant-input" placeholder="Contestant 1 Name (e.g. Rohan)">
+        <input type="text" id="contestant2Input" class="contestant-input" placeholder="Contestant 2 Name (e.g. Priya)">
+      </div>
+
+      <button id="btnStartGame" class="btn-primary-action">Enter the Hot Seat</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: LIFELINE POPUP (CALL / EXPERT / POLL)
+       ========================================== -->
+  <div id="lifelineModal" class="kbc-modal-overlay">
+    <div class="kbc-modal-card">
+      <h2 class="modal-title">LIFELINE ACTIVATED</h2>
+      <p class="modal-subtitle">Details about the lifeline</p>
+      <div id="lifelineModalContent">
+        <!-- Dynamic content injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: ROUND OVER / MILESTONE SUMMARY
+       ========================================== -->
+  <div id="roundOverModal" class="kbc-modal-overlay">
+    <div class="kbc-modal-card">
+      <h2 class="modal-title">ROUND CONCLUDED</h2>
+      <p class="modal-subtitle">Summary of points won</p>
+      <button id="btnNextRound" class="btn-primary-action">Move to Next Section</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4: GRAND FINALE LEADERBOARD
+       ========================================== -->
+  <div id="finaleModal" class="kbc-modal-overlay">
+    <div class="kbc-modal-card" style="max-width: 720px;">
+      <h2 class="modal-title" style="font-size: 32px; color: var(--kbc-gold-light);">🏆 CHAMPIONS OF KBC 🏆</h2>
+      <p class="modal-subtitle">Creative Arts Championship • Final Standings</p>
+
+      <div id="finalePodium" class="finale-podium">
+        <!-- 1st, 2nd, 3rd Podium elements -->
+      </div>
+
+      <div style="display:flex; justify-content:center; gap: 14px;">
+        <button id="btnRestartAll" class="btn-primary-action" style="background: linear-gradient(90deg, #2563eb, #1d4ed8); color: #fff;">Play Again / Reset</button>
+        <button id="btnCloseFinale" class="btn-primary-action">Close Podium</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 5: QUESTION BANK & EDITOR (FOR HOST)
+       ========================================== -->
+  <div id="questionEditorModal" class="kbc-modal-overlay">
+    <div class="kbc-modal-card" style="max-width: 760px; text-align: left;">
+      <h2 class="modal-title" style="text-align: center;">CUSTOM QUESTION EDITOR</h2>
+      <p class="modal-subtitle" style="text-align: center;">Edit existing questions or insert your own custom witty questions for any Section & Level</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">SECTION</label>
+          <select id="editSectionSelect" class="contestant-input" style="width: 100%; margin-top: 4px;">
+            <option value="Section A">Section A</option>
+            <option value="Section B">Section B</option>
+            <option value="Section C">Section C</option>
+            <option value="Bonus / Reserve">Bonus / Reserve Bank</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">LEVEL (1 to 15)</label>
+          <select id="editLevelSelect" class="contestant-input" style="width: 100%; margin-top: 4px;">
+            <!-- 1 to 15 -->
+            <option value="1">Level 1 (1,000 PTS)</option>
+            <option value="2">Level 2 (2,000 PTS)</option>
+            <option value="3">Level 3 (3,000 PTS)</option>
+            <option value="4">Level 4 (5,000 PTS)</option>
+            <option value="5">Level 5 (10,000 PTS - Milestone 1)</option>
+            <option value="6">Level 6 (20,000 PTS)</option>
+            <option value="7">Level 7 (40,000 PTS)</option>
+            <option value="8">Level 8 (80,000 PTS)</option>
+            <option value="9">Level 9 (1,60,000 PTS)</option>
+            <option value="10">Level 10 (3,20,000 PTS - Milestone 2)</option>
+            <option value="11">Level 11 (6,40,000 PTS)</option>
+            <option value="12">Level 12 (12,50,000 PTS)</option>
+            <option value="13">Level 13 (25,00,000 PTS)</option>
+            <option value="14">Level 14 (50,00,000 PTS)</option>
+            <option value="15">Level 15 (1 CRORE PTS)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; color: #94a3b8; font-weight:600;">CATEGORY</label>
+        <input type="text" id="editCategoryInput" class="contestant-input" style="width: 100%; margin-top: 4px;" placeholder="Bollywood / Hollywood / Tech / Pop Culture / GK">
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; color: #94a3b8; font-weight:600;">QUESTION TEXT</label>
+        <textarea id="editQuestionTextInput" class="contestant-input" style="width: 100%; margin-top: 4px; height: 60px; resize: vertical;" placeholder="Type question text here..."></textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">OPTION A</label>
+          <input type="text" id="editOpt0Input" class="contestant-input" style="width: 100%; margin-top: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">OPTION B</label>
+          <input type="text" id="editOpt1Input" class="contestant-input" style="width: 100%; margin-top: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">OPTION C</label>
+          <input type="text" id="editOpt2Input" class="contestant-input" style="width: 100%; margin-top: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">OPTION D</label>
+          <input type="text" id="editOpt3Input" class="contestant-input" style="width: 100%; margin-top: 4px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">CORRECT ANSWER</label>
+          <select id="editCorrectSelect" class="contestant-input" style="width: 100%; margin-top: 4px;">
+            <option value="0">Option A</option>
+            <option value="1">Option B</option>
+            <option value="2">Option C</option>
+            <option value="3">Option D</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #94a3b8; font-weight:600;">WITTY HOST COMMENT / TRIVIA</label>
+          <input type="text" id="editWittyInput" class="contestant-input" style="width: 100%; margin-top: 4px;" placeholder="Fun punchline or post-answer trivia">
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap: 12px;">
+        <button id="btnCloseQuestionEditor" class="btn-walkaway" style="padding: 10px 20px;">Cancel</button>
+        <button id="btnSaveCustomQuestion" class="btn-primary-action" style="padding: 10px 24px;">Save Question</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/questions.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/stage.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/host.js"></script>
+
+  <!-- Initialization & Bootstrap -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize Canvas Stage Light and Fog
+      stageEffect = new KBCStageEffect('stageCanvas');
+
+      // 2. Initialize Game Engine
+      kbcGame = new KBCGame();
+
+      // 3. Initialize Host Controls
+      hostController = new KBCHostController(kbcGame);
+
+      // 4. Section Card click selection in Start Modal
+      const sectionButtons = document.querySelectorAll('.section-card-btn');
+      sectionButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sectionButtons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+      });
+
+      // 5. Start Game Button Handler
+      document.getElementById('btnStartGame').addEventListener('click', () => {
+        const selectedBtn = document.querySelector('.section-card-btn.selected');
+        const sectionKey = selectedBtn ? selectedBtn.getAttribute('data-section') : "Section A";
+        
+        const c1 = document.getElementById('contestant1Input').value.trim();
+        const c2 = document.getElementById('contestant2Input').value.trim();
+        const names = [c1, c2].filter(Boolean).join(' & ') || `${sectionKey} Hot Seat Duo`;
+
+        // Play Intro Music on first click
+        kbcAudio.playIntro();
+
+        setTimeout(() => {
+          kbcGame.startSectionRound(sectionKey, names);
+        }, 1200);
+      });
+
+      // 6. Grand Finale Close & Restart Handlers
+      document.getElementById('btnCloseFinale').addEventListener('click', () => {
+        document.getElementById('finaleModal').classList.remove('active');
+      });
+
+      document.getElementById('btnRestartAll').addEventListener('click', () => {
+        if (confirm("Reset all section scores and start a fresh tournament?")) {
+          localStorage.removeItem('kbc_bit_jaipur_state');
+          location.reload();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
