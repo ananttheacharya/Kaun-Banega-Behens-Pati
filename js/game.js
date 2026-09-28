@@ -1,7 +1,44 @@
 /**
- * KAUN BANEGA CROREPATI - BIT JAIPUR EDITION
+ * KAUN BANEGA CROREPATI
  * Core Game Engine & State Machine
  */
+
+const KBC_LADDER = [
+  { level: 1, points: 1000, display: "1,000", isMilestone: false },
+  { level: 2, points: 2000, display: "2,000", isMilestone: false },
+  { level: 3, points: 3000, display: "3,000", isMilestone: false },
+  { level: 4, points: 5000, display: "5,000", isMilestone: false },
+  { level: 5, points: 10000, display: "10,000", isMilestone: true },
+  { level: 6, points: 20000, display: "20,000", isMilestone: false },
+  { level: 7, points: 40000, display: "40,000", isMilestone: false },
+  { level: 8, points: 80000, display: "80,000", isMilestone: false },
+  { level: 9, points: 160000, display: "1,60,000", isMilestone: false },
+  { level: 10, points: 320000, display: "3,20,000", isMilestone: true },
+  { level: 11, points: 640000, display: "6,40,000", isMilestone: false },
+  { level: 12, points: 1250000, display: "12,50,000", isMilestone: false },
+  { level: 13, points: 2500000, display: "25,00,000", isMilestone: false },
+  { level: 14, points: 5000000, display: "50,00,000", isMilestone: false },
+  { level: 15, points: 10000000, display: "1 CRORE", isMilestone: true }
+];
+
+function prepareQuestionForDisplay(q) {
+  const letters = ["A", "B", "C", "D"];
+  return {
+    ...q,
+    formattedOptions: q.options.map((opt, idx) => ({
+      letter: letters[idx],
+      text: opt,
+      isCorrect: idx === q.correct
+    }))
+  };
+}
+
+const INITIAL_QUESTION_BANK = {
+  "Section A": ROUND_1,
+  "Section B": ROUND_2,
+  "Section C": ROUND_3,
+  "Bonus / Reserve": CONTINGENCY
+};
 
 class KBCGame {
   constructor() {
@@ -218,7 +255,9 @@ class KBCGame {
     if (stageEffect) stageEffect.setMode('ambient');
 
     // Render Question & Options
-    this.questionCategoryTag.textContent = this.currentQuestion.category;
+    if (this.questionCategoryTag) {
+      this.questionCategoryTag.style.display = 'none';
+    }
     this.questionText.textContent = this.currentQuestion.question;
 
     this.currentQuestion.formattedOptions.forEach((opt, idx) => {
@@ -390,11 +429,6 @@ class KBCGame {
       kbcAudio.playCorrectSound();
       if (stageEffect) stageEffect.setMode('correct');
 
-      // Show Witty Trivia Toast
-      if (this.currentQuestion.wittyNote) {
-        this.showWittyToast(this.currentQuestion.wittyNote);
-      }
-
       // Check if jackpot reached
       if (this.currentLevel === 15) {
         setTimeout(() => {
@@ -416,10 +450,6 @@ class KBCGame {
 
       kbcAudio.playWrongSound();
       if (stageEffect) stageEffect.setMode('wrong');
-
-      if (this.currentQuestion.wittyNote) {
-        this.showWittyToast(this.currentQuestion.wittyNote);
-      }
 
       const safePoints = this.calculateSafeMilestonePoints();
       setTimeout(() => {
@@ -708,12 +738,11 @@ class KBCGame {
   }
 
   showWittyToast(msg) {
-    this.wittyToast.textContent = msg;
-    this.wittyToast.classList.add('show');
+    // Witty comments disabled per user request
   }
 
   hideWittyToast() {
-    this.wittyToast.classList.remove('show');
+    // Witty comments disabled per user request
   }
 
   // ==========================================

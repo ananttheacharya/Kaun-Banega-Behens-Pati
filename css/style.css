@@ -1148,32 +1148,8 @@ body {
   color: #38bdf8;
 }
 
-/* Witty Trivia Toast */
 .witty-note-toast {
-  position: fixed;
-  bottom: 95px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: linear-gradient(135deg, rgba(8, 22, 60, 0.95), rgba(4, 12, 36, 0.98));
-  border: 1.5px solid var(--kbc-gold);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px var(--kbc-gold-glow);
-  border-radius: 30px;
-  padding: 10px 28px;
-  max-width: 750px;
-  text-align: center;
-  font-family: var(--font-main);
-  font-size: 14.5px;
-  font-weight: 600;
-  color: #fef08a;
-  z-index: 50;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.witty-note-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  display: none !important;
 }
 
 /* ==========================================================================

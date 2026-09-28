@@ -175,7 +175,7 @@ class KBCHostController {
         opt2Input.value = existing.options[2] || '';
         opt3Input.value = existing.options[3] || '';
         correctSelect.value = existing.correct;
-        wittyInput.value = existing.wittyNote || '';
+        if (wittyInput) wittyInput.value = existing.wittyNote || '';
       } else {
         catInput.value = "Custom Category";
         textInput.value = "";
@@ -184,7 +184,7 @@ class KBCHostController {
         opt2Input.value = "";
         opt3Input.value = "";
         correctSelect.value = 0;
-        wittyInput.value = "";
+        if (wittyInput) wittyInput.value = "";
       }
     };
 
@@ -213,7 +213,7 @@ class KBCHostController {
           opt3Input.value.trim() || "Option D"
         ],
         correct: parseInt(correctSelect.value, 10),
-        wittyNote: wittyInput.value.trim()
+        wittyNote: wittyInput ? wittyInput.value.trim() : ""
       };
 
       const existingIdx = bank.findIndex(q => q.level === lvl);
